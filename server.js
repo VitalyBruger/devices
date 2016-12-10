@@ -83,6 +83,9 @@ app.get('/admin/load', function(req, res) {
      db.read ( function(data) {    
 //    res.attachment('testing.csv');
  //   csv().from(data).to(res);
+      data.unshift({"devise":"Пристрій","deviseNumber":"Номер пристрою",
+          "tookDate":"Дата видачі","period":"Термін","whoTook":"Хто отримав"});
+      res.setHeader('Content-disposition', 'attachment; filename=devices.csv')
       res.csv(data);
       
     });
