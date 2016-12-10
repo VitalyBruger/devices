@@ -7,8 +7,7 @@
     '&deviseNumber=' + document.getElementById("deviseNumber").value+
         '&tookDate=' + document.getElementById("tookDate").value+
         '&whoTook=' + document.getElementById("whoTook").value+
-        '&period=' + document.getElementById("period").value;
-    console.log(body);
+        '&period=' + document.getElementById("period").value;    
     xhr.open("PUT", '/admin/edit/<%=data.id%>', true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
@@ -39,7 +38,15 @@
                 </tr>                
                 <tr>
                     <td>Дата видачі</td>
-                    <td><input type="text" id="tookDate" value="<%=data.tookDate%>" required></td>
+                    <% 
+                    if (data.tookDate == "" ) {
+                        var today = new Date();
+                    %>
+                    <td><input type="date" id="tookDate" value="<%=today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate()%>" required></td>
+                      
+                    <%} else {%>
+                    <td><input type="date" id="tookDate" value="<%=data.tookDate%>" required></td>
+                    <%}%>
                 </tr>
                 
                 <tr>

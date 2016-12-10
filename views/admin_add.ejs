@@ -9,8 +9,7 @@
     '&deviseNumber=' + document.getElementById("deviseNumber").value+
         '&tookDate=' + document.getElementById("tookDate").value+
         '&whoTook=' + document.getElementById("whoTook").value+
-         '&period=' + document.getElementById("period").value;
-    console.log(body);
+         '&period=' + document.getElementById("period").value;    
     xhr.open("POST", '/admin/add', true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
@@ -40,7 +39,7 @@
             <td><input type="text" id="deviseNumber" required></td>
         </tr>
         <tr>
-            <th>Дата видачі</th>
+            <td>Дата видачі</td>
             <td><input type="text" id="tookDate" required></td>
         </tr>
         <tr>

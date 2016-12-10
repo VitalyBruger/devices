@@ -57,8 +57,7 @@ app.get('/admin/changepas', function (req, res) {
 });
 
 app.post('/admin/changepas', function (req, res) {    
-  if (req.session.user) {
-    console.log(JSON.stringify({login:"admin",password:req.body.password}));
+  if (req.session.user) {    
     db.adminwrite ( JSON.stringify({login:"admin",password:req.body.password}),function() {
       res.redirect('/admin');
     });
@@ -208,8 +207,6 @@ app.put('/admin/edit/:id',function (req, res) {
 
 app.listen(port, function () {
   console.log('Listening on port ', port);
-
-
 });
 
 

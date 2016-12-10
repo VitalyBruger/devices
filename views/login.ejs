@@ -5,7 +5,6 @@
 
     var body = 'login=' + document.getElementById("login").value+
     '&password=' + document.getElementById("password").value;
-    console.log(body);
     xhr.open("POST", '/login', true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
