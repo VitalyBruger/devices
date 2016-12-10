@@ -1,9 +1,6 @@
 <script>
  function deleteSend(id){
-    console.log("delete");
-    var xhr = new XMLHttpRequest();
-
-   
+    var xhr = new XMLHttpRequest();   
     xhr.open("DELETE", '/admin/delete/'+id, true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
@@ -13,8 +10,19 @@
         window.location.href='/admin';
     }
 
-   xhr.send(); 
-   
+    xhr.send();    
+}
+
+function freeSend(id){    
+    var xhr = new XMLHttpRequest();   
+    xhr.open("PUT", '/admin/free/'+id, true)
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.onreadystatechange = function() {
+        if (this.readyState != 4) return;
+        //document.write(this.responseText);
+        window.location.href='/admin';
+    }
+    xhr.send();    
 }
 </script>
 
@@ -29,7 +37,7 @@
             <tr>
                 <th>№</th>
                 <th>Пристрій</th>
-                 <th>Інвентарний номер</th>
+                <th>Інвентарний номер</th>
                 <th>Дата видачі</th>
                 <th>Строк оренди</th>
                 <th>Хто взяв</th>
@@ -55,6 +63,8 @@
                     <td><%=data[i].period%></td>
                     <td><%=data[i].whoTook%></td>
                      <td>
+                        <button type="button"class="btn btn-success" onClick="freeSend(<%=i+1%>)">Повернути</button>
+
                         <button type="button"class="btn btn-warning" onClick="window.location.href='../admin/edit/<%=i+1%>'">Редагувати</button>
                         <button type="button"class="btn btn-danger" onClick="deleteSend(<%=i+1%>)">Видалити</button>
                     </td>
@@ -64,8 +74,26 @@
         </div>
         <div class="row">
             <button type="button"class="btn btn-success" onClick="window.location.href='../admin/add'">Додати пристрій</button>
+            <button type="button"class="btn btn-info" onClick="window.location.href='../admin/load'">Вивантажити протокол</button>
+
+            <button type="button"class="btn btn-primary" onClick="window.location.href='../admin/changepas'">Змінити пароль</button>
              
         </div>
+
+
+<div id="modal" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h2>Lorem Ipsum</h2>
+    </div>
+    <div class="modal-body">
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Donec placerat sem ipsum, ut faucibus nulla. Nullam mattis volutpat
+        dolor, eu porta magna facilisis ut. In ultricies, purus sed pellentesque
+        mollis, nibh tortor semper elit, eget rutrum purus nulla id quam.</p>
+    </div>
+</div>
+
 
     </div>
         

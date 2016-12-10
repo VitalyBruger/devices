@@ -4,6 +4,7 @@ var port = process.env.PORT || 3000;
 var db = require('./db.js');
 var path = require('path');
 var bodyParser = require('body-parser');
+var csv = require('express-csv');
 
 
 var expressSession = require('express-session');
@@ -28,38 +29,42 @@ app.use(expressSession({
   resave: true,
   rolling: true
 }));
-/*app.set('view engine', 'html');
-app.use(express.static(__dirname + '/public'));
-app.get('/', function (req, res) {
-    res.render('index.html', {
-        isMain: true
-    });
-});
-*/
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', function(req, res) {
-//    res.end('<div>Simple CRUD node.js + express application<br><br> <a href="/users">User list</a></div>');
   db.read ( function(data) {
     res.render('devises',{page_title:"Devises",data:data});
   });
-
 });
-
 
 app.get('/login', function (req, res) {    
   res.render('login',{page_title:"Login - Node.js"});
 });
 
 app.post('/login', function (req, res) {    
-  console.log(req.body.login);
-  console.log(req.body.password);
-  if (req.body.password=='qaz'){
-    req.session.user = req.body.login;
-    res.redirect('/admin');
-  }  
+  db.adminread ( function(data) {    
+    if (req.body.password == data.password){
+      req.session.user = req.body.login;
+      res.redirect('/admin');
+    }  
+  }); 
+});
+
+app.get('/admin/changepas', function (req, res) {    
+  res.render('changepas',{page_title:"Login - Node.js"});
+});
+
+app.post('/admin/changepas', function (req, res) {    
+  if (req.session.user) {
+    console.log(JSON.stringify({login:"admin",password:req.body.password}));
+    db.adminwrite ( JSON.stringify({login:"admin",password:req.body.password}),function() {
+      res.redirect('/admin');
+    });
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
@@ -73,7 +78,19 @@ app.get('/admin', function(req, res) {
   }
 });
 
+app.get('/admin/load', function(req, res) {
+  if (req.session.user) {
+     db.read ( function(data) {    
+//    res.attachment('testing.csv');
+ //   csv().from(data).to(res);
+      res.csv(data);
+      
+    });
 
+  } else {
+    res.redirect('/login');
+  }
+});
 
 app.get('/admin/add', function(req, res) {
   if (req.session.user) {
@@ -93,8 +110,9 @@ app.post('/admin/add', function (req, res) {
       devise:req.body.devise,
       deviseNumber:req.body.deviseNumber,
       tookDate:req.body.tookDate,
-      whoTook:req.body.whoTook,
-      period:req.body.period
+      period:req.body.period,
+      whoTook:req.body.whoTook
+      
     });
     db.write ( JSON.stringify(tblUsers),function() {
       res.redirect('/admin');
@@ -138,6 +156,29 @@ app.get('/admin/edit/:id', function (req, res) {
 });
 
 
+app.put('/admin/free/:id',function (req, res) {  
+  if (req.session.user) {
+    var id = req.params.id;
+    db.read ( function(data) {
+      var tblUsers = data;
+      tblUsers[id-1] = {
+        devise:tblUsers[id-1].devise,
+        deviseNumber:tblUsers[id-1].deviseNumber,
+        tookDate:"",
+        period:"",
+        whoTook:""        
+      };
+      db.write ( JSON.stringify(tblUsers),function() {
+        res.redirect('/admin');
+      });
+    });
+
+    }  else {
+    res.redirect('/login');
+  }
+});
+
+
 app.put('/admin/edit/:id',function (req, res) {  
   if (req.session.user) {
     var id = req.params.id;
@@ -147,8 +188,9 @@ app.put('/admin/edit/:id',function (req, res) {
         devise:req.body.devise,
         deviseNumber:req.body.deviseNumber,
         tookDate:req.body.tookDate,
-        whoTook:req.body.whoTook,
-        period:req.body.period
+        period:req.body.period,
+        whoTook:req.body.whoTook
+        
       };
       db.write ( JSON.stringify(tblUsers),function() {
         res.redirect('/admin');
@@ -163,6 +205,8 @@ app.put('/admin/edit/:id',function (req, res) {
 
 app.listen(port, function () {
   console.log('Listening on port ', port);
+
+
 });
 
 

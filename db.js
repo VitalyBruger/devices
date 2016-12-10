@@ -18,4 +18,22 @@ exports.write = function(data,callback){
 
 
 
+exports.adminread = function(callback){	  
+  fs.readFile('./data/admin.json', {encoding: 'utf8'}, function (err, data) {
+    if (err) throw err;
+    callback(JSON.parse(data));
+  });
+};
+
+
+exports.adminwrite = function(data,callback){		  
+  fs.writeFile('./data/admin.json', data, function (err) {
+    if (err) throw err;
+    callback();
+  });
+};
+
+
+
+
      
