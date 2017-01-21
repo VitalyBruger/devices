@@ -5,11 +5,11 @@
 
     var xhr = new XMLHttpRequest();
 
-    var body = 'devise=' + document.getElementById("devise").value+
-    '&deviseNumber=' + document.getElementById("deviseNumber").value+
-        '&tookDate=' + document.getElementById("tookDate").value+
-        '&whoTook=' + document.getElementById("whoTook").value+
-         '&period=' + document.getElementById("period").value;    
+    var body = 'devicename=' + document.getElementById("deviceName").value+
+    '&devicenumber=' + document.getElementById("deviceNumber").value+
+        '&tookdate=' + document.getElementById("tookDate").value+
+        '&owner=' + document.getElementById("owner").value+
+         '&returndate=' + document.getElementById("returnDate").value;    
     xhr.open("POST", '/admin/add', true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
 
@@ -22,6 +22,8 @@
    xhr.send(body); 
    
 }
+
+
 </script>
 
 <div class="container">
@@ -32,23 +34,23 @@
         <table class="table table-striped">
         <tr>
             <td >Пристрій</td>
-            <td><input type="text" id="devise" required></td>
+            <td><input type="text" id="deviceName" required></td>
         </tr>
          <tr>
             <td >Інвентарний номер</td>
-            <td><input type="text" id="deviseNumber" required></td>
+            <td><input type="text" id="deviceNumber" required></td>
         </tr>
         <tr>
-            <td>Дата видачі</td>
-            <td><input type="text" id="tookDate" required></td>
+            <td>Дата видачі</td>            
+            <td><input type="date" id="tookDate"  required></td>
         </tr>
         <tr>
             <td>Строк оренди</td>
-            <td><input type="text" id="period" required></td>
+            <td><input type="date" id="returnDate" required></td>
         </tr>
         <tr>
             <td >Хто взяв</td>
-            <td><input type="text" id="whoTook" required></td>
+            <td><input type="text" id="owner" required></td>
         </tr>
         <tr>
             <td ></td>
@@ -63,4 +65,8 @@
     </div>
 </div>
         
+<script>
+    //document.getElementById('tookDate').valueAsDate   = new Date();
+    //document.getElementById('returnDate').valueAsDate = new Date();
+</script>
 

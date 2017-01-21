@@ -1,0 +1,42 @@
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <div class="container">
+        <div class="row">
+            <h1>Пристрої</h1>
+            <br>
+            <table class="table table-striped">
+            <tr>
+                <th>№</th>
+                <th>Пристрій</th>
+                <th>Інвентарний номер</th>
+                <th>Дата видачі</th>
+                <th>Дата повернення</th>
+                <th>Хто взяв</th>
+            </tr>
+                               
+                <% if(data.length){ 
+                                
+                 for(var i = 0;i < data.length;i++) { 
+
+                    if (data[i].returndate == ""  && data[i].owner == "") {%>
+                 %>
+                 
+                <tr class="success">
+
+                <%} else {%>
+                <tr class="danger">
+                <%}%>
+                    <td><%=(i+1)%></td>
+                    <td><%=data[i].devicename%></td>
+                    <td><%=data[i].deviсenumber%></td>
+                    <td><%=data[i].tookdate%></td>
+                    <td><%=data[i].returndate%></td>
+                    <td><%=data[i].owner%></td>
+                </tr>
+            <% } } %>
+            </table>
+        </div>
+    </div>
+        
+

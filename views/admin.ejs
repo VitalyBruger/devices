@@ -44,29 +44,28 @@ function freeSend(id){
                 <th>Дії</th>
             </tr>
                                
-                <% if(data.length){ 
-                                
-                 for(var i = 0;i < data.length;i++) { 
+                <% if(data.length){                                 
+                 for(var i = 0;i < data.length;i++) 
 
-                    if (data[i].tookDate =='') {
-                 %>
-                 
+                 { 
+                 if (data[i].returndate == ""  && data[i].owner == "") {%>
                 <tr class="success">
 
                 <%} else {%>
+
                 <tr class="danger">
                 <%}%>
                     <td><%=(i+1)%></td>
-                    <td><%=data[i].devise%></td>
-                     <td><%=data[i].deviseNumber%></td>
-                    <td><%=data[i].tookDate%></td>
-                    <td><%=data[i].period%></td>
-                    <td><%=data[i].whoTook%></td>
+                    <td><%=data[i].devicename%></td>
+                    <td><%=data[i].devicenumber%></td>
+                    <td><%=data[i].tookdate%></td>
+                    <td><%=data[i].returndate%></td>
+                    <td><%=data[i].owner%></td>
                      <td>
-                        <button type="button"class="btn btn-success" onClick="freeSend(<%=i+1%>)">Повернути</button>
+                        <button type="button"class="btn btn-success" onClick="freeSend(<%=data[i].id%>)">Повернути</button>
 
-                        <button type="button"class="btn btn-warning" onClick="window.location.href='../admin/edit/<%=i+1%>'">Редагувати</button>
-                        <button type="button"class="btn btn-danger" onClick="deleteSend(<%=i+1%>)">Видалити</button>
+                        <button type="button"class="btn btn-warning" onClick="window.location.href='../admin/edit/<%=data[i].id%>'">Редагувати</button>
+                        <button type="button"class="btn btn-danger" onClick="deleteSend(<%=data[i].id%>)">Видалити</button>
                     </td>
                 </tr>
             <% } } %>

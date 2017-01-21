@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 3000;
-var db = require('./db.js');
+var dbsql = require('./dbsql.js');
 var path = require('path');
 var bodyParser = require('body-parser');
 var csv = require('express-csv');
@@ -34,8 +34,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', function(req, res) {
-  db.read ( function(data) {
-    res.render('devises',{page_title:"Devises",data:data});
+  dbsql.getDevices(function(data) {    
+    res.render('devices',{page_title:"Devices",data:data});
   });
 });
 
@@ -44,12 +44,12 @@ app.get('/login', function (req, res) {
 });
 
 app.post('/login', function (req, res) {    
-  db.adminread ( function(data) {    
-    if (req.body.password == data.password){
+  dbsql.isUser(req.body.login,req.body.password,function (checkResult){
+    if (checkResult){
       req.session.user = req.body.login;
       res.redirect('/admin');
-    }  
-  }); 
+    }
+  });
 });
 
 app.get('/admin/changepas', function (req, res) {    
@@ -57,9 +57,11 @@ app.get('/admin/changepas', function (req, res) {
 });
 
 app.post('/admin/changepas', function (req, res) {    
-  if (req.session.user) {    
-    db.adminwrite ( JSON.stringify({login:"admin",password:req.body.password}),function() {
-      res.redirect('/admin');
+  if (req.session.user) {   
+    dbsql.updateUser(req.body.login,req.body.password,function (checkResult){
+      if (checkResult){      
+        res.redirect('/admin');
+      }
     });
   } else {
     res.redirect('/login');
@@ -69,8 +71,8 @@ app.post('/admin/changepas', function (req, res) {
 
 app.get('/admin', function(req, res) {  
   if (req.session.user) {
-    db.read ( function(data) {    
-      res.render('admin',{page_title:"Users - Node.js",data:data});
+    dbsql.getDevices(function(data) {    
+      res.render('admin',{page_title:"Devices - admin",data:data});
     });
   } else {
     res.redirect('/login');
@@ -79,16 +81,12 @@ app.get('/admin', function(req, res) {
 
 app.get('/admin/load', function(req, res) {
   if (req.session.user) {
-     db.read ( function(data) {    
-//    res.attachment('testing.csv');
- //   csv().from(data).to(res);
-      data.unshift({"devise":"Пристрій","deviseNumber":"Номер пристрою",
-          "tookDate":"Дата видачі","period":"Термін","whoTook":"Хто отримав"});
+    dbsql.getDevices(function(data) {    
+      data.unshift({"id":"ID","devicename":"Пристрій","devicenumber":"Номер пристрою",
+          "tookdate":"Дата видачі","returndate":"Дата повернення","owner":"Хто отримав"});
       res.setHeader('Content-disposition', 'attachment; filename=devices.csv')
       res.csv(data);
-      
-    });
-
+    }); 
   } else {
     res.redirect('/login');
   }
@@ -96,8 +94,7 @@ app.get('/admin/load', function(req, res) {
 
 app.get('/admin/add', function(req, res) {
   if (req.session.user) {
-    res.render('admin_add',{page_title:"Add User - Node.js"});
-
+    res.render('admin_add',{page_title:"Add device"});
   } else {
     res.redirect('/login');
   }
@@ -106,21 +103,9 @@ app.get('/admin/add', function(req, res) {
 
 app.post('/admin/add', function (req, res) {  
   if (req.session.user) {
-    db.read ( function(data) {
-    var tblUsers = data;
-    tblUsers.push({
-      devise:req.body.devise,
-      deviseNumber:req.body.deviseNumber,
-      tookDate:req.body.tookDate,
-      period:req.body.period,
-      whoTook:req.body.whoTook
-      
-    });
-    db.write ( JSON.stringify(tblUsers),function() {
+    dbsql.addDevice(req.body,function() {
       res.redirect('/admin');
     });
-  });
-
   } else {
     res.redirect('/login');
   }
@@ -129,6 +114,12 @@ app.post('/admin/add', function (req, res) {
 
 app.delete('/admin/delete/:id', function (req, res) {
   if (req.session.user) {
+    dbsql.deleteDevice(req.params.id,function() {
+      res.redirect('/admin');
+    });
+
+
+/*
     var id = req.params.id;
     db.read ( function(data) {
       var tblUsers = data;
@@ -136,7 +127,7 @@ app.delete('/admin/delete/:id', function (req, res) {
       db.write ( JSON.stringify(tblUsers),function() {
         res.redirect('/admin');
       });
-    });                 
+    });                 */
   }  else {
     res.redirect('/login');
   }
@@ -145,64 +136,36 @@ app.delete('/admin/delete/:id', function (req, res) {
 
 app.get('/admin/edit/:id', function (req, res) {
   if (req.session.user) {
-    var id = req.params.id;  
-    db.read ( function(data) {
-      var editUser = data[id-1];
-      editUser.id = id; 
-      res.render('admin_edit',{page_title:"Users - Node.js",data:editUser});
-    });  
+    dbsql.getDevice(req.params.id, function(data) {      
+      res.render('admin_edit',{page_title:"Edit device",data});
+    });    
   }  else {
     res.redirect('/login');
   }
 
 });
 
+app.put('/admin/edit/:id',function (req, res) {  
+  if (req.session.user) {
+    dbsql.updateDevice(req.params.id,req.body,function() {
+      res.redirect('/admin');
+    });        
+  }  else {
+    res.redirect('/login');
+  }
+});
+
 
 app.put('/admin/free/:id',function (req, res) {  
   if (req.session.user) {
-    var id = req.params.id;
-    db.read ( function(data) {
-      var tblUsers = data;
-      tblUsers[id-1] = {
-        devise:tblUsers[id-1].devise,
-        deviseNumber:tblUsers[id-1].deviseNumber,
-        tookDate:"",
-        period:"",
-        whoTook:""        
-      };
-      db.write ( JSON.stringify(tblUsers),function() {
-        res.redirect('/admin');
-      });
-    });
-
+     dbsql.returnDevice(req.params.id,function() {
+      res.redirect('/admin');
+    });   
     }  else {
     res.redirect('/login');
   }
 });
 
-
-app.put('/admin/edit/:id',function (req, res) {  
-  if (req.session.user) {
-    var id = req.params.id;
-    db.read ( function(data) {
-      var tblUsers = data;
-      tblUsers[id-1] = {
-        devise:req.body.devise,
-        deviseNumber:req.body.deviseNumber,
-        tookDate:req.body.tookDate,
-        period:req.body.period,
-        whoTook:req.body.whoTook
-        
-      };
-      db.write ( JSON.stringify(tblUsers),function() {
-        res.redirect('/admin');
-      });
-    });
-
-    }  else {
-    res.redirect('/login');
-  }
-});
 
 
 app.listen(port, function () {
