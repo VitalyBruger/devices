@@ -117,17 +117,6 @@ app.delete('/admin/delete/:id', function (req, res) {
     dbsql.deleteDevice(req.params.id,function() {
       res.redirect('/admin');
     });
-
-
-/*
-    var id = req.params.id;
-    db.read ( function(data) {
-      var tblUsers = data;
-      tblUsers.splice(id-1, 1); 
-      db.write ( JSON.stringify(tblUsers),function() {
-        res.redirect('/admin');
-      });
-    });                 */
   }  else {
     res.redirect('/login');
   }
@@ -158,7 +147,7 @@ app.put('/admin/edit/:id',function (req, res) {
 
 app.put('/admin/free/:id',function (req, res) {  
   if (req.session.user) {
-     dbsql.returnDevice(req.params.id,function() {
+    dbsql.returnDevice(req.params.id,function() {
       res.redirect('/admin');
     });   
     }  else {
@@ -166,6 +155,17 @@ app.put('/admin/free/:id',function (req, res) {
   }
 });
 
+
+app.get('/admin/history/:id', function (req, res) {
+  if (req.session.user) {
+    dbsql.getHistory(req.params.id, function(data) {      
+      res.render('history',{page_title:"History device",data});
+    });    
+  }  else {
+    res.redirect('/login');
+  }
+
+});
 
 
 app.listen(port, function () {

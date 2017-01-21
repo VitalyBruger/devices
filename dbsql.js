@@ -99,10 +99,23 @@ exports.deleteDevice = function(deleteID,callback){
 };
 
 exports.returnDevice = function(returnID,callback){     
-  var  sqlQuery = 'UPDATE devices  set tookdate = \'\', returndate = \'\', owner = \'\' where id ='+returnID;  
-
+  var  sqlQuery = 'INSERT INTO history (deviceID,tookDate,returnDate,owner) SELECT id,tookDate,returnDate,owner FROM devices where id='+returnID;  
   pool.query(sqlQuery, function(err, result) {
       if(err) return onError(err);      
-      callback(true);
+      sqlQuery = 'UPDATE devices  set tookdate = \'\', returndate = \'\', owner = \'\' where id ='+returnID;  
+
+      pool.query(sqlQuery, function(err, result) {
+        if(err) return onError(err);      
+        callback(true);
+      });
   });
+  
+};
+
+exports.getHistory = function(deviceId,callback){     
+  var  sqlQuery = 'SELECT * FROM history where deviceID='+deviceId;
+  pool.query(sqlQuery, function(err, result) {
+      if(err) return onError(err);          
+      callback(result.rows);
+    });
 };

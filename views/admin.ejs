@@ -14,6 +14,7 @@
 }
 
 function freeSend(id){    
+    if (id == 0) return;
     var xhr = new XMLHttpRequest();   
     xhr.open("PUT", '/admin/free/'+id, true)
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
@@ -39,7 +40,7 @@ function freeSend(id){
                 <th>Пристрій</th>
                 <th>Інвентарний номер</th>
                 <th>Дата видачі</th>
-                <th>Строк оренди</th>
+                <th>Дата повернення</th>
                 <th>Хто взяв</th>
                 <th>Дії</th>
             </tr>
@@ -62,10 +63,22 @@ function freeSend(id){
                     <td><%=data[i].returndate%></td>
                     <td><%=data[i].owner%></td>
                      <td>
-                        <button type="button"class="btn btn-success" onClick="freeSend(<%=data[i].id%>)">Повернути</button>
 
+                        
+                        <%if (data[i].returndate == ""  && data[i].owner == "") {%>
+                        <button type="button"class="btn btn-success disabled" 
+                            onClick="freeSend(0)">Повернути</button>
+                        <%} else {%>
+                            <button type="button"class="btn btn-success " 
+                            onClick="freeSend(<%=data[i].id%>)">Повернути</button>
+
+                        <%}%>
                         <button type="button"class="btn btn-warning" onClick="window.location.href='../admin/edit/<%=data[i].id%>'">Редагувати</button>
-                        <button type="button"class="btn btn-danger" onClick="deleteSend(<%=data[i].id%>)">Видалити</button>
+                        <button type="button"class="btn btn-danger" onClick="deleteSend(<%=data[i].id%>)">Видалити
+                        </button>
+                        <button type="button"class="btn btn-info" onClick="window.location.href='../admin/history/<%=data[i].id%>'">Історія
+                        </button>
+
                     </td>
                 </tr>
             <% } } %>
