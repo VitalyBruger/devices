@@ -3,6 +3,8 @@ var url = require('url');
 
 
 var params = url.parse(process.env.DATABASE_URL);
+
+
 var auth = params.auth.split(':');
 
 var config = {
@@ -69,6 +71,7 @@ exports.addDevice = function(newDevice,callback){
    '\''+newDevice.returndate + '\',' +
    '\''+newDevice.owner + '\'' +
   ')';  
+  
   pool.query(sqlQuery, function(err, result) {
       if(err) return onError(err);      
       callback(true);

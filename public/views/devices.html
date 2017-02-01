@@ -1,0 +1,40 @@
+  <div ng-controller="mainController">
+    <div class="container">
+        <div class="row">
+            <h1>Пристрої</h1>
+            <br>
+            <table class="table table-striped">
+            <tr>
+                <th>№</th>
+                <th>Пристрій</th>
+                <th>Інвентарний номер</th>
+                <th>Дата видачі</th>
+                <th>Дата повернення</th>
+                <th>Хто взяв</th>
+            </tr>
+                <tr  ng-class= "d.returndate == '' && d.owner == '' ? 'success' : 'danger'"  ng-repeat='d in devices'>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{d.devicename}}</td>
+                    <td>{{d.devicenumber}}</td>
+                    <td>{{d.tookdate}}</td>
+                    <td> {{d.returndate}} </td>
+                    <td>{{d.owner}}</td>
+                </tr>
+            
+            </table>
+
+        </div>
+
+       <div class="row">
+            <button type="button"class="btn btn-success" ng-click='loc.path( "/admin" )'>Адміністрування</button>
+          
+             
+        </div>
+
+
+
+    </div>
+         
+  </div>
+
+

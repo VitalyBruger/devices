@@ -1,0 +1,53 @@
+<div ng-controller="editController">
+    <div class="container">
+        <div class="row">
+            <h1>Редагування</h1>            
+            <br>
+                <table class="table table-striped">
+                <tr>
+                    <td >Пристрій</td>
+                    <td> <input type="text" ng-model="deviceName"  ></td>
+                </tr>
+                 <tr>
+                    <td >Інвентарний номер</td>
+                    <td><input type="text" ng-model="deviceNumber"   ></td>
+                </tr>                
+                <tr>
+                    <td>Дата видачі</td>
+                    
+                    
+                    <td><input type="date" ng-model="tookDate"  >
+                        <input class="btn btn-info" type="button" value="Очистити" 
+                        ng-click="tookDate=''">
+
+                    </td>
+                    
+                </tr>
+                
+                <tr>
+                    <td>Дата повернення</td>
+                    <td><input type="date" ng-model="returnDate" >
+                        <input class="btn btn-info" type="button" value="Очистити" 
+                        ng-click="returnDate=''">
+                    </td>
+                </tr>
+                <tr>
+                   <td >Хто взяв</td>
+                   <td><input type="text" ng-model="owner"  ></td>
+                </tr>
+                  
+                <tr>
+                    <td></td>
+                    <td>
+                        <input class="btn btn-success" type="button"  value="Зберегти" 
+                        ng-click="updateDevice()">
+                        <input class="btn btn-danger" type="button"  value="Відмінити"  
+                        ng-click='loc.path("/admin")'>
+                    </td>
+                </tr>
+                </table>
+        </div>
+    </div>
+</div>
+
+

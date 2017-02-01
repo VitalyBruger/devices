@@ -1,0 +1,23 @@
+    <div class="container">
+        <div class="row">
+            <h1>Історія </h1>
+            <h3>Інвентарний номер </h3>
+            <br>
+            <table class="table table-striped">
+                <tr>                
+                    <th>Дата видачі</th>
+                    <th>Дата повернення</th>
+                    <th>Хто брав</th>
+                </tr>
+                <tr class="info" ng-repeat='h in history'>                
+                    <td>{{h.tookdate}}</td>
+                    <td>{{h.returndate}}</td>
+                    <td>{{h.owner}}</td>
+                </tr>            
+            </table>
+            <input class="btn btn-danger" type="button" name="cancel" value="Повернутись"  
+                        ng-click='loc.path( "/admin" )'>
+        </div>
+    </div>
+        
+

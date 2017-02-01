@@ -1,0 +1,76 @@
+<div ng-controller="changepasController">
+    <div class="container">
+        <div class="row">
+            <h1>Заміна пароля</h1>            
+            <br>
+                <form name="changepassword_form"  ng-submit="submitLoginForm()">
+                <table class="table table-striped">
+                <tr>
+                    <td>Логін</td>
+                    <td> <input type="text" ng-model="login" name="login" 
+                    ng-minlength=3 ng-maxlength=20 required>                
+                                
+                    <div class="text-danger" ng-show="changepassword_form.login.$invalid">
+                     
+                        <small 
+                        ng-show="changepassword_form.login.$error.required">
+                        Your login is required.
+                        </small>
+
+                        <small 
+                        ng-show="changepassword_form.login.$error.minlength">
+                        Your login is required to be at
+                        least 3 characters
+                        </small>
+                         
+                        <small 
+                        ng-show="changepassword_form.login.$error.maxlength">
+                        Your login cannot be longer than
+                        20 characters
+                        </small>
+                     </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Новий пароль</td>
+                    <td><input type="text"  ng-model="newpassword" name ="newpassword" required 
+                    ng-minlength=3 ng-maxlength=20>
+                    <div class="text-danger" ng-show="changepassword_form.newpassword.$invalid">
+                     
+                        <small 
+                        ng-show="changepassword_form.newpassword.$error.required">
+                        Your newpassword is required.
+                        </small>
+
+                        <small 
+                        ng-show="changepassword_form.newpassword.$error.minlength">
+                        Your newpassword is required to be at
+                        least 3 characters
+                        </small>
+                         
+                        <small 
+                        ng-show="changepassword_form.newpassword.$error.maxlength">
+                        Your newpassword cannot be longer than
+                        20 characters
+                        </small>
+                     </div>
+
+
+                    </td>
+                </tr>               
+                  
+                <tr>
+                    <td></td>
+                    <td>
+                        <input class="btn btn-success" type="submit" value="Змінити пароль">
+                        <input class="btn btn-danger" type="button" 
+                        value="Відмінити" ng-click='loc.path( "/admin" )'>
+                    </td>
+                </tr>
+                </table>
+                <form>
+        </div>
+    </div>
+</div>        
+
+

@@ -1,0 +1,30 @@
+<div ng-controller="loginController">
+    <div class="container">
+        <div class="row">
+            <h1>Аутентифікація</h1>            
+            <br>
+                <table class="table table-striped">
+                <tr>
+                    <td>Логін</td>
+                    <td> <input type="text" ng-model="login" required></td>
+                </tr>
+                 <tr>
+                    <td >Пароль</td>
+                    <td><input type="text" ng-model="password" required></td>
+                </tr>                
+                  
+                <tr>
+                    <td></td>
+                    <td>
+                        <input class="btn btn-success" type="button" name="submit" value="Увійти" 
+                        ng-click="submitLoginForm()">
+                        <input class="btn btn-danger" type="button" name="cancel" value="Відмінити"  
+                        ng-click='loc.path("/")'>
+                    </td>
+                </tr>
+                </table>
+        </div>
+    </div>
+</div>        
+
+

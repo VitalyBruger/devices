@@ -21,6 +21,8 @@ var sessionStore = new MemoryStore();
 
 var sessionsSocket = [];
 
+app.use(express.static(__dirname + '/public')); 
+
 app.use(expressSession({
   secret:secret,
   store:  sessionStore,
@@ -33,38 +35,34 @@ app.use(expressSession({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/', function(req, res) {
-  dbsql.getDevices(function(data) {    
-    res.render('devices',{page_title:"Devices",data:data});
+app.get('/devices', function(req, res) {
+  dbsql.getDevices(function(data) {       
+    res.send(data); 
   });
 });
 
-app.get('/login', function (req, res) {    
-  res.render('login',{page_title:"Login - Node.js"});
-});
-
-app.post('/login', function (req, res) {    
+app.post('/login', function (req, res) {        
   dbsql.isUser(req.body.login,req.body.password,function (checkResult){
     if (checkResult){
       req.session.user = req.body.login;
-      res.redirect('/admin');
+      res.status(200).send('Autorized');
     }
-  });
-});
-
-app.get('/admin/changepas', function (req, res) {    
-  res.render('changepas',{page_title:"Login - Node.js"});
+    else {
+      res.status(401).send('Access or action denied, please log in');
+    }
+  }); 
 });
 
 app.post('/admin/changepas', function (req, res) {    
+  console.log (req.body.login,req.body.newpassword);
   if (req.session.user) {   
-    dbsql.updateUser(req.body.login,req.body.password,function (checkResult){
+    dbsql.updateUser(req.body.login,req.body.newpassword,function (checkResult){
       if (checkResult){      
-        res.redirect('/admin');
+        res.status(200).send('password changed');
       }
     });
   } else {
-    res.redirect('/login');
+    rres.status(401).send('Access or action denied, please log in');
   }
 });
 
@@ -72,10 +70,10 @@ app.post('/admin/changepas', function (req, res) {
 app.get('/admin', function(req, res) {  
   if (req.session.user) {
     dbsql.getDevices(function(data) {    
-      res.render('admin',{page_title:"Devices - admin",data:data});
+      res.status(200).send(data);      
     });
   } else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');
   }
 });
 
@@ -88,15 +86,7 @@ app.get('/admin/load', function(req, res) {
       res.csv(data);
     }); 
   } else {
-    res.redirect('/login');
-  }
-});
-
-app.get('/admin/add', function(req, res) {
-  if (req.session.user) {
-    res.render('admin_add',{page_title:"Add device"});
-  } else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');
   }
 });
 
@@ -104,10 +94,10 @@ app.get('/admin/add', function(req, res) {
 app.post('/admin/add', function (req, res) {  
   if (req.session.user) {
     dbsql.addDevice(req.body,function() {
-      res.redirect('/admin');
+      res.status(200).send('device added'); 
     });
   } else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');    
   }
 });    
       
@@ -115,10 +105,10 @@ app.post('/admin/add', function (req, res) {
 app.delete('/admin/delete/:id', function (req, res) {
   if (req.session.user) {
     dbsql.deleteDevice(req.params.id,function() {
-      res.redirect('/admin');
+      res.status(200).send('device ' + req.params.id + ' deleted'); 
     });
   }  else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');  
   }
 });
 
@@ -126,10 +116,10 @@ app.delete('/admin/delete/:id', function (req, res) {
 app.get('/admin/edit/:id', function (req, res) {
   if (req.session.user) {
     dbsql.getDevice(req.params.id, function(data) {      
-      res.render('admin_edit',{page_title:"Edit device",data});
+      res.status(200).send(data); 
     });    
   }  else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');  
   }
 
 });
@@ -137,10 +127,10 @@ app.get('/admin/edit/:id', function (req, res) {
 app.put('/admin/edit/:id',function (req, res) {  
   if (req.session.user) {
     dbsql.updateDevice(req.params.id,req.body,function() {
-      res.redirect('/admin');
+      res.status(200).send('device ' + req.params.id + ' updated'); 
     });        
   }  else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');  
   }
 });
 
@@ -148,23 +138,22 @@ app.put('/admin/edit/:id',function (req, res) {
 app.put('/admin/free/:id',function (req, res) {  
   if (req.session.user) {
     dbsql.returnDevice(req.params.id,function() {
-      res.redirect('/admin');
+      res.status(200).send('device ' + req.params.id + ' returned');
     });   
     }  else {
-    res.redirect('/login');
+    res.status(401).send('Access or action denied, please log in');  
   }
 });
 
 
-app.get('/admin/history/:id', function (req, res) {
+app.get('/admin/history/:id', function (req, res) {  
   if (req.session.user) {
-    dbsql.getHistory(req.params.id, function(data) {      
-      res.render('history',{page_title:"History device",data});
-    });    
-  }  else {
-    res.redirect('/login');
+    dbsql.getHistory(req.params.id, function(data) {            
+      res.status(200).send(data);
+    });        
+  }  else {    
+    res.status(401).send('Access or action denied, please log in');
   }
-
 });
 
 
