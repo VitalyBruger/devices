@@ -1,18 +1,20 @@
 var app = angular.module('ssbsDevices', ["ngRoute"]);
 
-app.controller("mainController",function ($scope, $http, $location) {
+app.controller("mainController",function ($scope, $rootScope, $http, $location) {
     $scope.loc =  $location;    
-    $http.get('/devices')
-        .success(function(data) {
-            $scope.devices = data;   
-            
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-        });
+        $http.get('/devices')
+            .success(function(data) {
+                $scope.devices = data;   
+    
+            })
+            .error(function(data,status) {
+                $rootScope.lastError={'status':status,'message':data};            
+                $location.path( "/error" );              
+            });
+        
 });
 
-app.controller("adminController",function ($scope, $http, $location) {
+app.controller("adminController",function ($scope, $rootScope, $http, $location) {
     $scope.loc =  $location;    
     
     $scope.getDevices = function(){
@@ -22,9 +24,13 @@ app.controller("adminController",function ($scope, $http, $location) {
             $scope.devices = data;  
             
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $location.path( "/login" );  
+        .error(function(data,status) {
+            if (status!=401) {
+                $rootScope.lastError={'status':status,'message':data};            
+                $location.path( "/error" );              
+            } else {
+                $location.path( "/login" ); 
+            }
         });
     }
 
@@ -33,14 +39,13 @@ app.controller("adminController",function ($scope, $http, $location) {
 
     $scope.returnDevice = function(id) {
         $http.put('/admin/free/'+id)
-        .success(function(data) {            
-            console.log(data);   
+        .success(function(data) {                    
             $scope.getDevices();            
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $location.path( "/login" );  
-        });        
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data}; 
+            $location.path( "/error" );              
+        });       
     }
 
     $scope.isDeviceFree = function(device) {        
@@ -57,9 +62,9 @@ app.controller("adminController",function ($scope, $http, $location) {
             console.log(data);   
             $scope.getDevices();            
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $location.path( "/login" );  
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data}; 
+            $location.path( "/error" );              
         });
 
     }
@@ -78,18 +83,16 @@ app.controller("loginController",function ($scope, $http, $location) {
           };
      
         $http.post("/login", data)
-        .success(function(data) {
-            
+        .success(function(data) {            
             $location.path( "/admin" );        
         })
         .error(function(data) {
-            $scope.password = '';
-            console.log('Error: ' + data);
+            $scope.password = '';            
         });
     } 
 });
 
-app.controller("changepasController",function ($scope, $http, $location) {
+app.controller("changepasController",function ($scope, $rootScope, $http, $location) {
     $scope.login = 'admin';
     $scope.newpassword = '';
     $scope.loc =     $location;
@@ -105,26 +108,27 @@ app.controller("changepasController",function ($scope, $http, $location) {
             
             $location.path( "/admin" );        
         })
-        .error(function(data) {            
-            console.log('Error: ' + data);
-            $location.path( "/login" );
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data};            
+            $location.path( "/error" );              
         });
     } 
 });
 
-app.controller("historyController",function ($scope, $http, $location, $routeParams) {
+app.controller("historyController",function ($scope, $rootScope, $http, $location, $routeParams) {
     $scope.loc =  $location;    
 
     $http.get('/admin/history/'+$routeParams.id)
         .success(function(data) {            
             $scope.history =  data;    
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data};            
+            $location.path( "/error" );              
         });
 });
 
-app.controller("addController",function ($scope, $http, $location,$filter) {
+app.controller("addController",function ($scope, $rootScope, $http, $location,$filter) {
     $scope.deviceName = '';
     $scope.deviceNumber = '';
     $scope.tookDate = '';
@@ -144,13 +148,14 @@ app.controller("addController",function ($scope, $http, $location,$filter) {
         .success(function(data) {                       
             $location.path( "/admin" );        
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data};            
+            $location.path( "/error" );              
         });
     } 
 });
 
-app.controller("editController",function ($scope, $http, $location, $filter, $routeParams) {
+app.controller("editController",function ($scope, $rootScope, $http, $location, $filter, $routeParams) {
     $scope.deviceName = '';
     $scope.deviceNumber = '';
     $scope.tookDate = '';
@@ -168,9 +173,9 @@ app.controller("editController",function ($scope, $http, $location, $filter, $ro
             $scope.returnDate = new Date(data.returndate);
             $scope.owner = data.owner;                                    
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
-            $location.path( "/login" );  
+       .error(function(data,status) {            
+            $rootScope.lastError={'status':status,'message':data};            
+            $location.path( "/error" );    
         });
     
     $scope.updateDevice = function() {
@@ -189,47 +194,34 @@ app.controller("editController",function ($scope, $http, $location, $filter, $ro
             returndate:newreturndate,
             owner:$scope.owner
           };    
-          console.log('$scope.owner',$scope.owner);
+
         $http.put("/admin/edit/"+$routeParams.id, data)
         .success(function(data) {         
-            console.log(data);   
             $location.path( "/admin" );        
         })
-        .error(function(data) {
-            console.log('Error: ' + data);
+        .error(function(data,status) {
+            $rootScope.lastError={'status':status,'message':data};
+            $location.path( "/error" );    
         });
     } 
 });
 
+
+app.controller("errorController",function ($scope, $rootScope, $http, $location) {
+    $scope.status = $rootScope.lastError.status;
+    $scope.message = $rootScope.lastError.message;   
+    $scope.loc =  $location;
+});
+
+
 app.config(function($routeProvider) {
   $routeProvider
-  .when("/", {    
-    templateUrl : "/views/devices.html",
-    controller: 'mainController'
-  })
-  .when("/login", {    
-    templateUrl : "/views/login.html",
-    controller: 'loginController'
-  })
-  .when("/admin", {    
-    templateUrl : "/views/admin.html",
-    controller: 'adminController'
-  })
-  .when("/admin/changepas", {    
-    templateUrl : "/views/changepas.html",
-    controller: 'changepasController'
-  })
-  .when("/admin/history/:id", {    
-    templateUrl : "/views/history.html",
-    controller: 'historyController'
-  })
-  .when("/admin/add", {    
-    templateUrl : "/views/admin_add.html",
-    controller: 'addController'
-  })
-  .when("/admin/edit/:id", {    
-    templateUrl : "/views/admin_edit.html",
-    controller: 'editController'
-  });
-
+  .when("/", {templateUrl : "/views/devices.html" })
+  .when("/login", {templateUrl : "/views/login.html" })
+  .when("/admin", { templateUrl : "/views/admin.html"})
+  .when("/admin/changepas", {templateUrl : "/views/changepas.html"})
+  .when("/admin/history/:id", {templateUrl : "/views/history.html"})
+  .when("/admin/add", {templateUrl : "/views/admin_add.html"})
+  .when("/admin/edit/:id", {templateUrl : "/views/admin_edit.html"})
+  .when("/error", {templateUrl : "/views/error.html"});
 });

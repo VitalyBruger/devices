@@ -22,6 +22,8 @@ var sessionStore = new MemoryStore();
 var sessionsSocket = [];
 
 app.use(express.static(__dirname + '/public')); 
+app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
+
 
 app.use(expressSession({
   secret:secret,
@@ -36,29 +38,37 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/devices', function(req, res) {
-  dbsql.getDevices(function(data) {       
-    res.send(data); 
+  dbsql.getDevices(function(err,result) {   
+      if(err)
+        onError(err,res);                      
+      else
+        res.status(200).send(result); 
   });
 });
 
 app.post('/login', function (req, res) {        
-  dbsql.isUser(req.body.login,req.body.password,function (checkResult){
-    if (checkResult){
-      req.session.user = req.body.login;
-      res.status(200).send('Autorized');
-    }
-    else {
-      res.status(401).send('Access or action denied, please log in');
+  dbsql.isUser(req.body.login,req.body.password,function (err,result){
+    if(err)
+        onError(err,res); 
+    else 
+      if (result){
+        req.session.user = req.body.login;
+        res.status(200).send('Autorized');
+      }
+      else {
+        res.status(401).send('Access or action denied, please log in');
     }
   }); 
 });
 
-app.post('/admin/changepas', function (req, res) {    
-  console.log (req.body.login,req.body.newpassword);
+app.post('/admin/changepas', function (req, res) {      
   if (req.session.user) {   
-    dbsql.updateUser(req.body.login,req.body.newpassword,function (checkResult){
-      if (checkResult){      
-        res.status(200).send('password changed');
+    dbsql.updateUser(req.body.login,req.body.newpassword,function (err,result){
+      if(err)
+        onError(err,res); 
+      else 
+        if (result){      
+          res.status(200).send('password changed');
       }
     });
   } else {
@@ -69,9 +79,13 @@ app.post('/admin/changepas', function (req, res) {
 
 app.get('/admin', function(req, res) {  
   if (req.session.user) {
-    dbsql.getDevices(function(data) {    
-      res.status(200).send(data);      
-    });
+      dbsql.getDevices(function(err,result) {   
+      if(err)
+        onError(err,res);                      
+      else
+        res.status(200).send(result); 
+  });
+
   } else {
     res.status(401).send('Access or action denied, please log in');
   }
@@ -79,11 +93,15 @@ app.get('/admin', function(req, res) {
 
 app.get('/admin/load', function(req, res) {
   if (req.session.user) {
-    dbsql.getDevices(function(data) {    
-      data.unshift({"id":"ID","devicename":"Пристрій","devicenumber":"Номер пристрою",
-          "tookdate":"Дата видачі","returndate":"Дата повернення","owner":"Хто отримав"});
-      res.setHeader('Content-disposition', 'attachment; filename=devices.csv')
-      res.csv(data);
+    dbsql.getDevices(function(err,result) {   
+      if(err)
+        onError(err,res);                      
+      else {
+        result.unshift({"id":"ID","devicename":"Пристрій","devicenumber":"Номер пристрою",
+            "tookdate":"Дата видачі","returndate":"Дата повернення","owner":"Хто отримав"});
+        res.setHeader('Content-disposition', 'attachment; filename=devices.csv')
+        res.csv(result);
+      }
     }); 
   } else {
     res.status(401).send('Access or action denied, please log in');
@@ -93,8 +111,11 @@ app.get('/admin/load', function(req, res) {
 
 app.post('/admin/add', function (req, res) {  
   if (req.session.user) {
-    dbsql.addDevice(req.body,function() {
-      res.status(200).send('device added'); 
+    dbsql.addDevice(req.body,function(err,result) {
+      if(err)
+        onError(err,res);  
+      else
+        res.status(200).send('device added');       
     });
   } else {
     res.status(401).send('Access or action denied, please log in');    
@@ -104,8 +125,11 @@ app.post('/admin/add', function (req, res) {
 
 app.delete('/admin/delete/:id', function (req, res) {
   if (req.session.user) {
-    dbsql.deleteDevice(req.params.id,function() {
-      res.status(200).send('device ' + req.params.id + ' deleted'); 
+    dbsql.deleteDevice(req.params.id,function(err,result) {
+      if(err)
+        onError(err,res);  
+      else
+        res.status(200).send('device ' + req.params.id + ' deleted'); 
     });
   }  else {
     res.status(401).send('Access or action denied, please log in');  
@@ -115,8 +139,11 @@ app.delete('/admin/delete/:id', function (req, res) {
 
 app.get('/admin/edit/:id', function (req, res) {
   if (req.session.user) {
-    dbsql.getDevice(req.params.id, function(data) {      
-      res.status(200).send(data); 
+    dbsql.getDevice(req.params.id, function(err,result) {      
+      if(err)
+        onError(err,res);                      
+      else
+        res.status(200).send(result); 
     });    
   }  else {
     res.status(401).send('Access or action denied, please log in');  
@@ -126,8 +153,11 @@ app.get('/admin/edit/:id', function (req, res) {
 
 app.put('/admin/edit/:id',function (req, res) {  
   if (req.session.user) {
-    dbsql.updateDevice(req.params.id,req.body,function() {
-      res.status(200).send('device ' + req.params.id + ' updated'); 
+    dbsql.updateDevice(req.params.id,req.body,function(err,result) {
+      if(err)
+        onError(err,res);                      
+      else
+        res.status(200).send('device ' + req.params.id + ' updated'); 
     });        
   }  else {
     res.status(401).send('Access or action denied, please log in');  
@@ -137,8 +167,11 @@ app.put('/admin/edit/:id',function (req, res) {
 
 app.put('/admin/free/:id',function (req, res) {  
   if (req.session.user) {
-    dbsql.returnDevice(req.params.id,function() {
-      res.status(200).send('device ' + req.params.id + ' returned');
+    dbsql.returnDevice(req.params.id,function(err,result) {
+      if(err)
+        onError(err,res);                      
+      else
+        res.status(200).send('device ' + req.params.id + ' returned');
     });   
     }  else {
     res.status(401).send('Access or action denied, please log in');  
@@ -146,10 +179,14 @@ app.put('/admin/free/:id',function (req, res) {
 });
 
 
-app.get('/admin/history/:id', function (req, res) {  
+app.get('/admin/history/:id', function (req, res) { 
   if (req.session.user) {
-    dbsql.getHistory(req.params.id, function(data) {            
-      res.status(200).send(data);
+    dbsql.getHistory(req.params.id, function(err,result) {     
+      if(err)
+        onError(err,res);                      
+      else {              
+        res.status(200).send(result);
+      }
     });        
   }  else {    
     res.status(401).send('Access or action denied, please log in');
@@ -160,5 +197,13 @@ app.get('/admin/history/:id', function (req, res) {
 app.listen(port, function () {
   console.log('Listening on port ', port);
 });
+
+
+var onError = function(err,res) {
+  console.error('Error', err.message,  err.stack);        
+  res.writeHead(500, {'content-type': 'text/plain'});
+  res.end('An error occurred ' + err.message);
+};
+
 
 
