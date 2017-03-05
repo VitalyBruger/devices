@@ -1,4 +1,4 @@
-var app = angular.module('ssbsDevices', ["ngRoute"]);
+var app = angular.module('ssbsDevices', ["ngRoute","ui.bootstrap"]);
 
 app.controller("mainController",function ($scope, $rootScope, $http, $location) {
     $scope.loc =  $location;    
@@ -163,9 +163,33 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
     $scope.owner = '';
     $scope.loc =  $location;
 
+
+  
+  $scope.dateOptions = {
+    formatYear: 'yy',
+    maxDate: new Date(2020, 5, 22),
+    minDate: new Date(),
+    startingDay: 1
+  };
+
+  $scope.popupTookDate = false;
+  $scope.showPopapTookDate = function() {
+    $scope.popupTookDate = true;
+  };
+
+  $scope.popupReturnDate = false;
+  $scope.showPopapReturnDate = function() {
+    $scope.popupReturnDate = true;
+  };
+
+  
+  $scope.format = 'dd-MM-yyyy';
+  $scope.altInputFormats = ['M!/d!/yyyy'];
+
+
+ 
     $http.get('/admin/edit/'+$routeParams.id)
-        .success(function(data) {
-            console.log(data);
+        .success(function(data) {            
             $scope.device = data;
             $scope.deviceName = data.devicename;
             $scope.deviceNumber = data.devicenumber;
@@ -181,10 +205,10 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
     $scope.updateDevice = function() {
           var newtookdate = '';
           var newreturndate = '';
-          if($scope.tookDate != 'Invalid Date') 
-            newtookdate = $filter('date')($scope.tookDate, 'yyyy-MM-dd');
-          if($scope.returnDate != 'Invalid Date') 
-            newreturndate = $filter('date')($scope.returnDate, 'yyyy-MM-dd');
+          if($scope.tookDate != 'Invalid Date' && $scope.tookDate != '' && $scope.tookDate != null) 
+            newtookdate = $filter('date')($scope.tookDate, 'dd-MM-yyyy');
+          if($scope.returnDate != 'Invalid Date' && $scope.returnDate != ''&& $scope.returnDate != null) 
+            newreturndate = $filter('date')($scope.returnDate, 'dd-MM-yyyy');
         
 
           var data = {
@@ -194,7 +218,7 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
             returndate:newreturndate,
             owner:$scope.owner
           };    
-
+        console.log(data);
         $http.put("/admin/edit/"+$routeParams.id, data)
         .success(function(data) {         
             $location.path( "/admin" );        

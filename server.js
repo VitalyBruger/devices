@@ -28,7 +28,7 @@ app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
 app.use(expressSession({
   secret:secret,
   store:  sessionStore,
-  cookie: { maxAge: 1 * 60 * 1000 },
+  cookie: { maxAge: 10 * 60 * 1000 },
   saveUninitialized: true,
   resave: true,
   rolling: true

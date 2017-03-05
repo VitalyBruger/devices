@@ -1,48 +1,119 @@
+
 <div ng-controller="editController">
     <div class="container">
         <div class="row">
             <h1>Редагування</h1>            
             <br>
+                <form name="changedevice_form"  ng-submit="updateDevice()">
                 <table class="table table-striped">
                 <tr>
                     <td >Пристрій</td>
-                    <td> <input type="text" ng-model="deviceName"  ></td>
+                    <td> <input type="text" class="form-control" ng-model="deviceName" name="deviceName"
+                    ng-minlength=3 ng-maxlength=50 required>
+
+                   <div class="text-danger" ng-show="changedevice_form.deviceName.$invalid">                     
+                        <small 
+                        ng-show="changedevice_form.deviceName.$error.required">
+                        Ім'я пристрою обов'язкове
+                        </small>
+                        <small 
+                        ng-show="changedevice_form.deviceName.$error.minlength">
+                        Ім'я пристрою має бути більше 3 символів
+                        </small>
+                         
+                        <small 
+                        ng-show="changedevice_form.deviceName.$error.maxlength">
+                        Ім'я пристрою має бути менше 50 символів
+                        </small>
+                     </div>
+                    </td>
                 </tr>
+
                  <tr>
                     <td >Інвентарний номер</td>
-                    <td><input type="text" ng-model="deviceNumber"   ></td>
+                    <td><input type="text" class="form-control" ng-model="deviceNumber"  name="deviceNumber" required
+                        ng-minlength=3 ng-maxlength=50 >
+                   <div class="text-danger" ng-show="changedevice_form.deviceNumber.$invalid">                     
+                        <small 
+                        ng-show="changedevice_form.deviceNumber.$error.required">
+                        Номер пристрою обов'язкове
+                        </small>
+                        <small 
+                        ng-show="changedevice_form.deviceNumber.$error.minlength">
+                        Номер пристрою має бути більше 3 символів
+                        </small>
+                         
+                        <small 
+                        ng-show="changedevice_form.deviceNumber.$error.maxlength">
+                        Номер пристрою має бути менше 50 символів
+                        </small>
+                     </div>
+                    </td>
                 </tr>                
                 <tr>
                     <td>Дата видачі</td>
-                    <td><input type="date" ng-model="tookDate"  >
-                        <input class="btn btn-info" type="button" value="Очистити" 
-                        ng-click="tookDate=''">
+                    <td>
+                        
+                    <p class="input-group">
+                      <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="tookDate" is-open="popupTookDate" datepicker-options="dateOptions"  alt-input-formats="altInputFormats"
+                      pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}" />
+
+
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="showPopapTookDate()">
+                        <i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>                                    
 
                     </td>                    
                 </tr>
                 
                 <tr>
                     <td>Дата повернення</td>
-                    <td><input type="date" ng-model="returnDate" >
-                        <input class="btn btn-info" type="button" value="Очистити" 
-                        ng-click="returnDate=''">
+                    <td>
+
+                    <p class="input-group">
+                      <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="returnDate" is-open="popupReturnDate" datepicker-options="dateOptions"  alt-input-formats="altInputFormat" pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"/>
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="showPopapReturnDate()">
+                        <i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>                                    
+
+
                     </td>
                 </tr>
                 <tr>
                    <td >Хто взяв</td>
-                   <td><input type="text" ng-model="owner"  ></td>
+                   <td><input type="text" class="form-control" ng-model="owner" name="owner" ng-minlength=3 ng-maxlength=50 >
+                   <div class="text-danger" ng-show="changedevice_form.owner.$invalid">
+                        <small 
+                        ng-show="changedevice_form.owner.$error.minlength">
+                         Ім'я власника пристрою має бути більше 3 символів
+                        </small>
+                         
+                        <small 
+                        ng-show="changedevice_form.owner.$error.maxlength">
+                        Ім'я власника пристрою  має бути менше 50 символів
+                        </small>
+                     </div>
+
+                   </td>
                 </tr>
                   
                 <tr>
                     <td></td>
                     <td>
-                        <input class="btn btn-success" type="button"  value="Зберегти" 
-                        ng-click="updateDevice()">
-                        <input class="btn btn-danger" type="button"  value="Відмінити"  
-                        ng-click='loc.path("/admin")'>
+
+                        <input class="btn btn-success" type="submit" ng-disabled="changedevice_form.$invalid"
+                         value="Зберегти">
+                        <input class="btn btn-danger" type="button" 
+                        value="Відмінити" ng-click='loc.path( "/admin" )'>
+
                     </td>
                 </tr>
                 </table>
+                </form>
         </div>
     </div>
 </div>
