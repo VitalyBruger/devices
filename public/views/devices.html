@@ -5,11 +5,11 @@
             <br>
             <table class="table table-striped table-hover">
             <tr>
-                <th>№</th>
-                <th>Пристрій</th>
-                <th>Інвентарний номер</th>
-                <th>Дата видачі</th>
-                <th>Дата повернення</th>
+                <th >№</th>
+                <th ng-click="sortTable('devicename')">Пристрій {{getSortTableColum('devicename')}} </th>
+                <th ng-click="sortTable('devicenumber')">Інвентарний номер{{getSortTableColum('devicenumber')}} </th>
+                <th ng-click="sortTable('tookdate')">Дата видачі{{getSortTableColum('tookdate')}}</th>
+                <th ng-click="sortTable('returndate')">Дата повернення{{getSortTableColum('returndate')}}</th>
                 <th>Хто взяв</th>
             </tr>
                 <tr  ng-class= "d.returndate == '' && d.owner == '' ? 'success' : 'danger'"  ng-repeat='d in devices'>

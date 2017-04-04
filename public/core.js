@@ -11,6 +11,46 @@ app.controller("mainController",function ($scope, $rootScope, $http, $location) 
                 $rootScope.lastError={'status':status,'message':data};            
                 $location.path( "/error" );              
             });
+    $scope.sortTableDesc = false;
+    $scope.sortTableColum = null;
+    $scope.getSortTableColum = function (colum){
+        if ($scope.sortTableColum == colum){
+            if ($scope.sortTableDesc) return '▲';
+            else return '▼'
+
+        }
+       return '';
+    }
+    $scope.sortTable = function(colum){
+        $scope.sortTableColum = colum;
+        if ($scope.devices[0].hasOwnProperty(colum)){
+             $scope.devices.sort(function (a,b){
+
+                if(colum =='tookdate' || colum =='returndate' )
+                {
+                    var dateParts1 = a[colum].split("-");
+                    var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
+                    var dateParts2= b[colum].split("-");
+                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);
+
+                    if (d1 > d2)   
+                        return $scope.sortTableDesc ? 1 : -1;
+                    if (d1 < d2)   
+                        return $scope.sortTableDesc ? -1 : 1;
+                    return 0;
+                } else {
+                    if (a[colum] > b[colum])   
+                        return $scope.sortTableDesc ? 1 : -1;
+                    if (a[colum] < b[colum])   
+                        return $scope.sortTableDesc ? -1 : 1;
+                    return 0;
+
+                }
+                })
+        }        
+        $scope.sortTableDesc = !$scope.sortTableDesc;
+        console.log($scope.sortTableDesc);
+    }
         
 });
 
@@ -66,8 +106,23 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location)
             $rootScope.lastError={'status':status,'message':data}; 
             $location.path( "/error" );              
         });
-
     }
+
+    $scope.sortTableDesc = false;
+    $scope.sortTable = function(colum){
+        if ($scope.devices[0].hasOwnProperty(colum)){
+             $scope.devices.sort(function (a,b){
+                    if (a[colum] > b[colum])   
+                        return $scope.sortTableDesc ? 1 : -1;
+                    if (a[colum] < b[colum])   
+                        return $scope.sortTableDesc ? -1 : 1;
+                    return 0;
+                })
+        }
+        console.log($scope.sortTableDesc,colum);
+        $scope.sortTableDesc = !$scope.sortTableDesc;
+    }
+        
 
 });
 
@@ -237,6 +292,9 @@ app.controller("errorController",function ($scope, $rootScope, $http, $location)
     $scope.loc =  $location;
 });
 
+app.controller("errorController404",function ($scope, $rootScope, $http, $location) {
+    $scope.loc =  $location;
+});
 
 app.config(function($routeProvider) {
   $routeProvider
@@ -247,5 +305,6 @@ app.config(function($routeProvider) {
   .when("/admin/history/:id", {templateUrl : "/views/history.html"})
   .when("/admin/add", {templateUrl : "/views/admin_add.html"})
   .when("/admin/edit/:id", {templateUrl : "/views/admin_edit.html"})
-  .when("/error", {templateUrl : "/views/error.html"});
+  .when("/error", {templateUrl : "/views/error.html"})
+  .otherwise({templateUrl : "/views/error404.html"});
 });
