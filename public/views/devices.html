@@ -10,24 +10,22 @@
                 <th ng-click="sortTable('devicenumber')">Інвентарний номер{{getSortTableColum('devicenumber')}} </th>
                 <th ng-click="sortTable('tookdate')">Дата видачі{{getSortTableColum('tookdate')}}</th>
                 <th ng-click="sortTable('returndate')">Дата повернення{{getSortTableColum('returndate')}}</th>
-                <th>Хто взяв</th>
+                <th ng-click="sortTable('owner')">Хто взяв{{getSortTableColum('owner')}}</th>
             </tr>
                 <tr  ng-class= "d.returndate == '' && d.owner == '' ? 'success' : 'danger'"  ng-repeat='d in devices'>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{d.devicename}}</td>
-                    <td>{{d.devicenumber}}</td>
-                    <td>{{d.tookdate}}</td>
+                    <td> {{ $index + 1 }} </td>
+                    <td> {{d.devicename}} </td>
+                    <td> {{d.devicenumber}} </td>
+                    <td> {{d.tookdate}} </td>
                     <td> {{d.returndate}} </td>
-                    <td>{{d.owner}}</td>
+                    <td> {{d.owner}} </td>
                 </tr>
             
             </table>
 
         </div>
 
-       <div class="row">
-            <button type="button"class="btn btn-success" ng-click='loc.path( "/admin" )'>Адміністрування</button>
-        </div>
+       
     </div>
          
   </div>

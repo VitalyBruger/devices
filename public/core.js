@@ -28,11 +28,16 @@ app.controller("mainController",function ($scope, $rootScope, $http, $location) 
 
                 if(colum =='tookdate' || colum =='returndate' )
                 {
+
                     var dateParts1 = a[colum].split("-");
                     var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
-                    var dateParts2= b[colum].split("-");
-                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);
+                    if (d1 == 'Invalid Date') d1=new Date('2000-01-01');
 
+                    var dateParts2= b[colum].split("-");
+                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);                    
+                    if (d2 == 'Invalid Date') d2=new Date('2000-01-01');
+
+                    
                     if (d1 > d2)   
                         return $scope.sortTableDesc ? 1 : -1;
                     if (d1 < d2)   
@@ -49,7 +54,7 @@ app.controller("mainController",function ($scope, $rootScope, $http, $location) 
                 })
         }        
         $scope.sortTableDesc = !$scope.sortTableDesc;
-        console.log($scope.sortTableDesc);
+        
     }
         
 });
@@ -99,7 +104,7 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location)
     $scope.deleteDevice = function(id) {
         $http.delete('/admin/delete/'+id)
         .success(function(data) {            
-            console.log(data);   
+            
             $scope.getDevices();            
         })
         .error(function(data,status) {
@@ -119,7 +124,7 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location)
                     return 0;
                 })
         }
-        console.log($scope.sortTableDesc,colum);
+        
         $scope.sortTableDesc = !$scope.sortTableDesc;
     }
         
@@ -223,7 +228,7 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
   $scope.dateOptions = {
     formatYear: 'yy',
     maxDate: new Date(2020, 5, 22),
-    minDate: new Date(),
+    minDate: new Date(2010, 5, 22),
     startingDay: 1
   };
 
@@ -248,9 +253,14 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
             $scope.device = data;
             $scope.deviceName = data.devicename;
             $scope.deviceNumber = data.devicenumber;
-            $scope.tookDate = new Date(data.tookdate);
-            $scope.returnDate = new Date(data.returndate);
-            $scope.owner = data.owner;                                    
+            var dateParts = data.tookdate.split("-");                    
+            $scope.tookDate = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+            dateParts = data.returndate.split("-");
+            $scope.returnDate = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+            $scope.owner = data.owner;      
+            console.log(data); 
+            console.log(data.tookdate,data.returndate);
+            console.log($scope.tookDate,$scope.returnDate);
         })
        .error(function(data,status) {            
             $rootScope.lastError={'status':status,'message':data};            
@@ -273,7 +283,7 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
             returndate:newreturndate,
             owner:$scope.owner
           };    
-        console.log(data);
+        
         $http.put("/admin/edit/"+$routeParams.id, data)
         .success(function(data) {         
             $location.path( "/admin" );        
