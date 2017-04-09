@@ -1,8 +1,7 @@
 
 <div ng-controller="editController">
-    <div class="container">
-        <div class="row">
-            <h1>Редагування</h1>            
+    
+            <h3><i>Редагування</i></h3>            
             <br>
                 <form name="changedevice_form"  ng-submit="updateDevice()">
                 <table class="table table-striped">
@@ -33,7 +32,7 @@
                     <td >Інвентарний номер</td>
                     <td><input type="text" class="form-control" ng-model="deviceNumber"  name="deviceNumber" required
                         ng-minlength=3 ng-maxlength=50 >
-                   <div class="text-danger" ng-show="changedevice_form.deviceNumber.$invalid">                     
+                    <div class="text-danger" ng-show="changedevice_form.deviceNumber.$invalid">
                         <small 
                         ng-show="changedevice_form.deviceNumber.$error.required">
                         Номер пристрою обов'язкове
@@ -47,7 +46,7 @@
                         ng-show="changedevice_form.deviceNumber.$error.maxlength">
                         Номер пристрою має бути менше 50 символів
                         </small>
-                     </div>
+                    </div>
                     </td>
                 </tr>                
                 <tr>
@@ -64,7 +63,6 @@
                         <i class="glyphicon glyphicon-calendar"></i></button>
                       </span>
                     </p>                                    
-
                     </td>                    
                 </tr>
                 
@@ -104,18 +102,15 @@
                 <tr>
                     <td></td>
                     <td>
-
                         <input class="btn btn-success" type="submit" ng-disabled="changedevice_form.$invalid"
                          value="Зберегти">
                         <input class="btn btn-danger" type="button" 
                         value="Відмінити" ng-click='loc.path( "/admin" )'>
-
                     </td>
                 </tr>
                 </table>
                 </form>
-        </div>
-    </div>
+     
 </div>
 
 

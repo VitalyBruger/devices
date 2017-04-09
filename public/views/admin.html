@@ -1,21 +1,16 @@
-<div ng-controller="adminController">
-    <div class="container">
-        <div class="row">
-            <h1>Пристрої (админістрування)</h1>
-            <br>
-       
+<div ng-controller="adminController"> 
+            <h3><i> Адміністрування</i></h3>
+            <br>       
             <table class="table table-striped table-hover">
             <tr>
                 <th>№</th>
-                <th ng-click="sortTable('devicename')">Пристрій</th>
-                <th ng-click="sortTable('devicenumber')">Інвентарний номер</th>
-                <th>Дата видачі</th>
-                <th>Дата повернення</th>
-                <th>Хто взяв</th>
-                <th>Дії</th>
-            </tr>
-                               
-               
+                <th ng-click="sortTable('devicename')">Пристрій {{getSortTableColum('devicename')}} </th>
+                <th ng-click="sortTable('devicenumber')">Інвентарний номер{{getSortTableColum('devicenumber')}} </th>
+                <th ng-click="sortTable('tookdate')">Дата видачі{{getSortTableColum('tookdate')}}</th>
+                <th ng-click="sortTable('returndate')">Дата повернення{{getSortTableColum('returndate')}}</th>
+                <th ng-click="sortTable('owner')">Хто взяв{{getSortTableColum('owner')}}</th>
+                <th >Дії</th>
+            </tr>                                              
                 <tr  ng-class= "isDeviceFree(d) ? 'success' : 'danger'"  ng-repeat='d in devices'>
                     <td>{{$index+1}}</td>
                     <td>{{d.devicename}}</td>
@@ -26,32 +21,37 @@
                     <td class="hidden-xs">   
                         <button type="button" class="btn btn-success "
                             ng-class= "isDeviceFree(d) ? 'disabled' : ''" 
-                            ng-click= "isDeviceFree(d) ? '' : returnDevice(d.id)">Повернути</button>
+                            ng-click= "isDeviceFree(d) ? '' : returnDevice(d.id)"
+                            data-toggle="tooltip" title="Повернути">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
                         
-                        <button type="button"class="btn btn-warning " 
-                        ng-click= 'loc.path("/admin/edit/"+d.id)'>Редагувати</button>
-
-                        <button type="button"class="btn btn-danger " ng-click="deleteDevice(d.id)">Видалити
+                        <button type="button"class="btn btn-warning"  
+                            ng-click= 'loc.path("/admin/edit/"+d.id)'
+                            data-toggle="tooltip" title="Редагувати">
+                            <span class="glyphicon glyphicon-edit">
                         </button>
 
-                        <button type="button"class="btn btn-info " ng-click= 'loc.path("/admin/history/"+d.id)'>Історія</button>
+                        <button type="button"class="btn btn-danger " ng-click="deleteDevice(d.id)"
+                            data-toggle="tooltip" title="Видалити">
+                            <span class="glyphicon glyphicon-trash">
+                        </button>
 
+                        <button type="button"class="btn btn-info" ng-click='loc.path("/admin/history/"+d.id)'
+                            data-toggle="tooltip" title="Історія">
+                            <span class="glyphicon glyphicon-list-alt"> 
+                        </button>
                     </td>
-                </tr>
-            
+                </tr>            
             </table>
-            
-        </div>
-
-        <div class="row">
+                
+        
             <button type="button"class="btn btn-success" ng-click='loc.path("/admin/add")'>Додати пристрій</button>
 
             <button type="button"class="btn btn-info" onClick="window.location.href='../admin/load'">Вивантажити протокол</button>
 
             <button type="button"class="btn btn-primary" ng-click='loc.path("/admin/changepas")'>Змінити пароль</button>             
-        </div>
-
-
+        
     </div>
         
 

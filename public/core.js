@@ -1,6 +1,6 @@
 var app = angular.module('ssbsDevices', ["ngRoute","ui.bootstrap"]);
 
-app.controller("mainController",function ($scope, $rootScope, $http, $location) {
+app.controller("mainController",function ($scope, $rootScope, $http, $location, $window, devices) {
     $scope.loc =  $location;    
         $http.get('/devices')
             .success(function(data) {
@@ -21,49 +21,17 @@ app.controller("mainController",function ($scope, $rootScope, $http, $location) 
         }
        return '';
     }
-    $scope.sortTable = function(colum){
+    $scope.sortTable = function(colum){        
         $scope.sortTableColum = colum;
-        if ($scope.devices[0].hasOwnProperty(colum)){
-             $scope.devices.sort(function (a,b){
-
-                if(colum =='tookdate' || colum =='returndate' )
-                {
-
-                    var dateParts1 = a[colum].split("-");
-                    var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
-                    if (d1 == 'Invalid Date') d1=new Date('2000-01-01');
-
-                    var dateParts2= b[colum].split("-");
-                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);                    
-                    if (d2 == 'Invalid Date') d2=new Date('2000-01-01');
-
-                    
-                    if (d1 > d2)   
-                        return $scope.sortTableDesc ? 1 : -1;
-                    if (d1 < d2)   
-                        return $scope.sortTableDesc ? -1 : 1;
-                    return 0;
-                } else {
-                    if (a[colum] > b[colum])   
-                        return $scope.sortTableDesc ? 1 : -1;
-                    if (a[colum] < b[colum])   
-                        return $scope.sortTableDesc ? -1 : 1;
-                    return 0;
-
-                }
-                })
-        }        
+        devices.sortTable($scope.devices,colum,$scope.sortTableDesc);        
         $scope.sortTableDesc = !$scope.sortTableDesc;
-        
-    }
-        
+    }    
 });
 
-app.controller("adminController",function ($scope, $rootScope, $http, $location) {
+app.controller("adminController",function ($scope, $rootScope, $http, $location,$window, devices) {
     $scope.loc =  $location;    
     
     $scope.getDevices = function(){
-
     $http.get('/admin')
         .success(function(data) {
             $scope.devices = data;  
@@ -81,16 +49,18 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location)
 
     $scope.getDevices();
 
-
     $scope.returnDevice = function(id) {
-        $http.put('/admin/free/'+id)
-        .success(function(data) {                    
-            $scope.getDevices();            
-        })
-        .error(function(data,status) {
-            $rootScope.lastError={'status':status,'message':data}; 
-            $location.path( "/error" );              
-        });       
+        returnConfirm = $window.confirm('Ви дійсно бажаете повернути пристрій '); 
+        if (returnConfirm) {
+            $http.put('/admin/free/'+id)
+            .success(function(data) {                    
+                $scope.getDevices();            
+            })
+            .error(function(data,status) {
+                $rootScope.lastError={'status':status,'message':data}; 
+                $location.path( "/error" );              
+            });  
+        }     
     }
 
     $scope.isDeviceFree = function(device) {        
@@ -101,34 +71,35 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location)
        return false;
     }
 
-    $scope.deleteDevice = function(id) {
-        $http.delete('/admin/delete/'+id)
-        .success(function(data) {            
-            
-            $scope.getDevices();            
-        })
-        .error(function(data,status) {
-            $rootScope.lastError={'status':status,'message':data}; 
-            $location.path( "/error" );              
-        });
+    $scope.deleteDevice = function(id) {        
+      deleteConfirm = $window.confirm('Ви дійсно бажаете видалити пристрій ');         
+      if(deleteConfirm){             
+          $http.delete('/admin/delete/'+id)
+            .success(function(data) {                            
+                $scope.getDevices();            
+            })
+            .error(function(data,status) {
+                $rootScope.lastError={'status':status,'message':data}; 
+                $location.path( "/error" );              
+          });
+      }
     }
 
     $scope.sortTableDesc = false;
-    $scope.sortTable = function(colum){
-        if ($scope.devices[0].hasOwnProperty(colum)){
-             $scope.devices.sort(function (a,b){
-                    if (a[colum] > b[colum])   
-                        return $scope.sortTableDesc ? 1 : -1;
-                    if (a[colum] < b[colum])   
-                        return $scope.sortTableDesc ? -1 : 1;
-                    return 0;
-                })
-        }
-        
-        $scope.sortTableDesc = !$scope.sortTableDesc;
-    }
-        
+    $scope.sortTableColum = null;
+    $scope.getSortTableColum = function (colum){
+        if ($scope.sortTableColum == colum){
+            if ($scope.sortTableDesc) return '▲';
+            else return '▼'
 
+        }
+       return '';
+    }    
+    $scope.sortTable = function(colum){
+       $scope.sortTableColum = colum;
+        devices.sortTable($scope.devices,colum,$scope.sortTableDesc);        
+        $scope.sortTableDesc = !$scope.sortTableDesc;                
+    }        
 });
 
 app.controller("loginController",function ($scope, $http, $location) {
@@ -258,9 +229,6 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
             dateParts = data.returndate.split("-");
             $scope.returnDate = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
             $scope.owner = data.owner;      
-            console.log(data); 
-            console.log(data.tookdate,data.returndate);
-            console.log($scope.tookDate,$scope.returnDate);
         })
        .error(function(data,status) {            
             $rootScope.lastError={'status':status,'message':data};            
@@ -295,15 +263,19 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
     } 
 });
 
-
 app.controller("errorController",function ($scope, $rootScope, $http, $location) {
     $scope.status = $rootScope.lastError.status;
     $scope.message = $rootScope.lastError.message;   
     $scope.loc =  $location;
 });
 
-app.controller("errorController404",function ($scope, $rootScope, $http, $location) {
-    $scope.loc =  $location;
+app.controller("navbarController",function ($scope, $location,$window){
+    $scope.isActive = function (viewLocation) {         
+        return viewLocation === $location.path();
+    };
+
+ 
+
 });
 
 app.config(function($routeProvider) {
@@ -316,5 +288,45 @@ app.config(function($routeProvider) {
   .when("/admin/add", {templateUrl : "/views/admin_add.html"})
   .when("/admin/edit/:id", {templateUrl : "/views/admin_edit.html"})
   .when("/error", {templateUrl : "/views/error.html"})
+  .when("/news", {templateUrl : "/views/news.html"})
+  .when("/about", {templateUrl : "/views/about.html"})
   .otherwise({templateUrl : "/views/error404.html"});
+});
+
+
+app.service('devices',function(){
+    
+    this.sortTable = function (devices,colum,sortTableDesc){        
+        if (devices[0].hasOwnProperty(colum)){
+             devices.sort(function (a,b){
+
+                if(colum =='tookdate' || colum =='returndate' )
+                {
+
+                    var dateParts1 = a[colum].split("-");
+                    var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
+                    if (d1 == 'Invalid Date') d1=new Date('2000-01-01');
+
+                    var dateParts2= b[colum].split("-");
+                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);                    
+                    if (d2 == 'Invalid Date') d2=new Date('2000-01-01');
+
+                    
+                    if (d1 > d2)   
+                        return sortTableDesc ? 1 : -1;
+                    if (d1 < d2)   
+                        return sortTableDesc ? -1 : 1;
+                    return 0;
+                } else {
+                    if (a[colum] > b[colum])   
+                        return sortTableDesc ? 1 : -1;
+                    if (a[colum] < b[colum])   
+                        return sortTableDesc ? -1 : 1;
+                    return 0;
+
+                }
+                })
+        }                
+    }
+
 });
