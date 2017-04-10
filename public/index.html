@@ -19,6 +19,9 @@
   .brand{
   	font-size: large;
   }
+  .navbar-right{
+  	margin-right: 5px;
+  }
 </style>
 
 <body>
@@ -28,10 +31,21 @@
         <div class="row">
 			<nav class="navbar navbar-default" ng-controller="navbarController">			 			    
 			    <ul class="nav navbar-nav">
-			      <li ng-class="{ active: isActive('/')}"><a href="#/"><span class="brand">Пристрої</span></a></li>			      
+			      <li ng-class="{ active: isActive('/')}">
+			        <a href="#/"><span class="brand">Пристрої</span></a></li>		
+			      <li ng-show="isLoggedIn()" ng-class="{ active: isActive('/admin')}">
+			        <a href="#/admin"><span class="brand">Адміністрування</span></a></li>		
 			      <li ng-class="{ active: isActive('/news')}"><a href="#/news">Новини</a></li>			      
-			      <li ng-class="{ active: isActive('/about')}"><a href="#/about">Про програму</a></li>			      
+			      <li ng-class="{ active: isActive('/about')}"><a href="#/about">Про програму</a></li>
 			    </ul>
+		        <ul class="nav navbar-nav navbar-right">      				      				
+      				<li  ng-show="isLoggedIn()"><a href="#/admin/add">
+      				<span class="glyphicon glyphicon-plus"> </span> Додати пристрій</a></li>		
+      				<li  ng-show="isLoggedIn()"><a href="#/admin/changepas">
+      				<span class="glyphicon glyphicon-pencil"> </span> Змінити пароль</a></li>		
+      				<li  ng-show="isLoggedIn()" ng-click="logout()"><a href="#">
+      				<span class="glyphicon glyphicon-log-in"> </span> Вихід</a></li>		
+    			</ul>
 			</nav>			
 		</div>
 

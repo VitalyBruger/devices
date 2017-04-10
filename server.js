@@ -61,6 +61,12 @@ app.post('/login', function (req, res) {
   }); 
 });
 
+app.post('/logout', function (req, res) { 
+    req.session.destroy();
+    res.status(200).send('user log out');
+  });
+
+
 app.post('/admin/changepas', function (req, res) {      
   if (req.session.user) {   
     dbsql.updateUser(req.body.login,req.body.newpassword,function (err,result){

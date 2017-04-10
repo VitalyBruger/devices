@@ -1,22 +1,9 @@
-  <div ng-controller="errorController">
-
-            <h1>Відбулась помилка</h1>
-        
-        <div class="row">            
-            <h3>Http status: {{status}}</h3>
-        </div>
-        <div class="row">    
-            <h3>Error message: {{message}}</h3>            
-        </div>
-
-       <div class="row">
-            <button type="button"class="btn btn-success" ng-click='loc.path( "/" )'>Пристрої</button>
-            <button type="button"class="btn btn-success" ng-click='loc.path( "/admin" )'>Адміністрування
-            </button>         
-      </div>
-
-
-      
-  </div>
+<div ng-controller="errorController">
+  <h3><i>Відбулась помилка</i></h3>
+  <br>
+  <h4>Http status: {{status}}</h4>
+  <br>
+  <h4>Error message: {{message}}</h4>
+</div>
 
 

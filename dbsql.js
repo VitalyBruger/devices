@@ -1,10 +1,7 @@
 var pg = require('pg');
 var url = require('url');
 
-
 var params = url.parse(process.env.DATABASE_URL);
-
-
 
 var auth = params.auth.split(':');
 
@@ -18,8 +15,6 @@ var config = {
 };
 
 var pool = new pg.Pool(config);
-
-
 
 exports.isUser = function(login,password,callback){      
   pool.query('SELECT login,password FROM users', function(err, result) {      

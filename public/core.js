@@ -91,18 +91,21 @@ app.controller("adminController",function ($scope, $rootScope, $http, $location,
         if ($scope.sortTableColum == colum){
             if ($scope.sortTableDesc) return '▲';
             else return '▼'
-
         }
        return '';
     }    
     $scope.sortTable = function(colum){
        $scope.sortTableColum = colum;
-        devices.sortTable($scope.devices,colum,$scope.sortTableDesc);        
-        $scope.sortTableDesc = !$scope.sortTableDesc;                
-    }        
+       devices.sortTable($scope.devices,colum,$scope.sortTableDesc);        
+       $scope.sortTableDesc = !$scope.sortTableDesc;                
+    }  
+
+
+
+
 });
 
-app.controller("loginController",function ($scope, $http, $location) {
+app.controller("loginController",function ($scope, $http, $location, user) {
     $scope.login = 'admin';
     $scope.password = '';
     $scope.loc =     $location;
@@ -114,10 +117,12 @@ app.controller("loginController",function ($scope, $http, $location) {
           };
      
         $http.post("/login", data)
-        .success(function(data) {            
+        .success(function(data) {         
+            user.isLoggedIn = true;            
             $location.path( "/admin" );        
         })
         .error(function(data) {
+            user.isLoggedIn = false;
             $scope.password = '';            
         });
     } 
@@ -269,12 +274,33 @@ app.controller("errorController",function ($scope, $rootScope, $http, $location)
     $scope.loc =  $location;
 });
 
-app.controller("navbarController",function ($scope, $location,$window){
+app.controller("navbarController",function ($scope, $location, $http, $window, user){
     $scope.isActive = function (viewLocation) {         
-        return viewLocation === $location.path();
+      return viewLocation === $location.path();
+    };
+    
+    $scope.isLoggedIn = function() {        
+      return user.isLoggedIn;
     };
 
- 
+    
+    console.log("navbarController",$scope.isLoggedIn());
+      $scope.logout = function(){
+      $http.post('/logout')
+        .success(function(data) {
+            console.log(data);
+            user.isLoggedIn = false;
+            $location.path( "/" );               
+        })
+        .error(function(data,status) {
+            if (status!=401) {
+                $rootScope.lastError={'status':status,'message':data};            
+                $location.path( "/error" );              
+            } else {
+                $location.path( "/login" ); 
+            }
+        });    
+    };
 
 });
 
@@ -294,15 +320,13 @@ app.config(function($routeProvider) {
 });
 
 
-app.service('devices',function(){
-    
+app.service('devices',function(){    
     this.sortTable = function (devices,colum,sortTableDesc){        
         if (devices[0].hasOwnProperty(colum)){
              devices.sort(function (a,b){
 
                 if(colum =='tookdate' || colum =='returndate' )
                 {
-
                     var dateParts1 = a[colum].split("-");
                     var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
                     if (d1 == 'Invalid Date') d1=new Date('2000-01-01');
@@ -310,7 +334,6 @@ app.service('devices',function(){
                     var dateParts2= b[colum].split("-");
                     var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);                    
                     if (d2 == 'Invalid Date') d2=new Date('2000-01-01');
-
                     
                     if (d1 > d2)   
                         return sortTableDesc ? 1 : -1;
@@ -323,10 +346,18 @@ app.service('devices',function(){
                     if (a[colum] < b[colum])   
                         return sortTableDesc ? -1 : 1;
                     return 0;
-
                 }
-                })
+            })
         }                
     }
+});
 
+
+app.factory('user',function(){
+ 
+  var isLoggedIn = false;
+
+  return {
+    isLoggedIn: isLoggedIn
+  };
 });
