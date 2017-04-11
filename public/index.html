@@ -38,10 +38,16 @@
 			      <li ng-class="{ active: isActive('/news')}"><a href="#/news">Новини</a></li>			      
 			      <li ng-class="{ active: isActive('/about')}"><a href="#/about">Про програму</a></li>
 			    </ul>
+
+
 		        <ul class="nav navbar-nav navbar-right">      				      				
-      				<li  ng-show="isLoggedIn()"><a href="#/admin/add">
+      				<li  ng-show="isLoggedIn()" ng-click="loadProtocol()"><a href="#/admin">
+      				<span class="glyphicon glyphicon-file"> </span> Протокол</a></li>	
+      				<li  ng-class="{ active: isActive('/admin/add')}" 
+      				     ng-show="isLoggedIn()"><a href="#/admin/add">
       				<span class="glyphicon glyphicon-plus"> </span> Додати пристрій</a></li>		
-      				<li  ng-show="isLoggedIn()"><a href="#/admin/changepas">
+      				<li  ng-class="{ active: isActive('/admin/changepas')}" 
+      				     ng-show="isLoggedIn()"><a href="#/admin/changepas">
       				<span class="glyphicon glyphicon-pencil"> </span> Змінити пароль</a></li>		
       				<li  ng-show="isLoggedIn()" ng-click="logout()"><a href="#">
       				<span class="glyphicon glyphicon-log-in"> </span> Вихід</a></li>		
@@ -57,7 +63,7 @@
 			<div class="panel panel-default">
 				<div class="panel-footer">
 				<br>
-					<h4>SSBS Implamentation&Support devices</h4>
+					<h4>SSBS Implementation&Support devices</h4>
 				<br>
 				</div>
 			</div>

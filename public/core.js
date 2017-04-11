@@ -283,9 +283,11 @@ app.controller("navbarController",function ($scope, $location, $http, $window, u
       return user.isLoggedIn;
     };
 
-    
-    console.log("navbarController",$scope.isLoggedIn());
-      $scope.logout = function(){
+    $scope.loadProtocol = function() {        
+      window.location.href='../admin/load';
+    };
+
+    $scope.logout = function(){
       $http.post('/logout')
         .success(function(data) {
             console.log(data);
