@@ -8,7 +8,7 @@
                 <th ng-click="sortTable('devicenumber')">Інвентарний номер{{getSortTableColum('devicenumber')}} </th>
                 <th ng-click="sortTable('tookdate')">Дата видачі{{getSortTableColum('tookdate')}}</th>
                 <th ng-click="sortTable('returndate')">Дата повернення{{getSortTableColum('returndate')}}</th>
-                <th ng-click="sortTable('owner')">Хто взяв{{getSortTableColum('owner')}}</th>
+                <th ng-click="sortTable('owner')">Орендар{{getSortTableColum('owner')}}</th>
                 <th >Дії</th>
             </tr>                                              
                 <tr  ng-class= "isDeviceFree(d) ? 'success' : 'danger'"  ng-repeat='d in devices'>

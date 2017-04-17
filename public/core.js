@@ -229,10 +229,13 @@ app.controller("editController",function ($scope, $rootScope, $http, $location, 
             $scope.device = data;
             $scope.deviceName = data.devicename;
             $scope.deviceNumber = data.devicenumber;
-            var dateParts = data.tookdate.split("-");                    
-            $scope.tookDate = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+            var dateParts = data.tookdate.split("-");    
+            console.log(data.tookdate);
+            $scope.tookDate = new Date(dateParts[2], dateParts[1]-1, dateParts[0]);
+            console.log(dateParts[2], dateParts[1]-1, dateParts[0]);
+            console.log($scope.tookDate);
             dateParts = data.returndate.split("-");
-            $scope.returnDate = new Date(dateParts[2], (dateParts[1]), dateParts[0]);
+            $scope.returnDate = new Date(dateParts[2], dateParts[1]-1, dateParts[0]);
             $scope.owner = data.owner;      
         })
        .error(function(data,status) {            
@@ -330,11 +333,11 @@ app.service('devices',function(){
                 if(colum =='tookdate' || colum =='returndate' )
                 {
                     var dateParts1 = a[colum].split("-");
-                    var d1 = new Date(dateParts1[2], (dateParts1[1]), dateParts1[0]);
+                    var d1 = new Date(dateParts1[2], dateParts1[1]-1, dateParts1[0]);
                     if (d1 == 'Invalid Date') d1=new Date('2000-01-01');
 
                     var dateParts2= b[colum].split("-");
-                    var d2 = new Date(dateParts2[2], (dateParts2[1]), dateParts2[0]);                    
+                    var d2 = new Date(dateParts2[2], dateParts2[1]-1, dateParts2[0]);                    
                     if (d2 == 'Invalid Date') d2=new Date('2000-01-01');
                     
                     if (d1 > d2)   
